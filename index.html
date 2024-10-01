@@ -9,44 +9,90 @@
 
 <body>
   <h1>Welcome to 3300 Project 1</h1>
-  <h2>Team Members:</h2><br>
+  <h2>Team Members:</h2>
   <h2>Stephen Syl-Akinwale (sis33)</h2>
   <h2>Anthony Lewis (all266)</h2>
 
 
   <script src="https://d3js.org/d3.v7.min.js"></script>
 
+  <svg id="chart" width="1200" height="900"></svg>
   <script>
-    // dimensions 
-    const width = 1200;
-    const height = 900;
-    const svg = d3.select("body")
-      .append("svg")
-      .attr("width", width)
-      .attr("height", height)
-      .style("border", "1px solid black");
 
-    d3.csv("data/2015_State_Top10Report_wTotalThefts.csv").then(function (data) {
-      // Process the data here
+    d3.csv("data/Top25-2015-Models-2015-thefts-for-release.csv").then(function (data) {
+      // Process the data
       console.log("pinky promise", data);
 
-      // scale for x axis 
+      // Set up the SVG canvas dimensions
+      const margin = { top: 30, right: 30, bottom: 70, left: 60 };
+      const width = 800 - margin.left - margin.right;
+      const height = 500 - margin.top - margin.bottom;
 
+      // Append the SVG object to the body of the page
+      const svg = d3.select("svg#chart")
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      // scale for y axis
+      // Parse the number of thefts and remove commas
+      data.forEach(d => {
+        d['# of Thefts'] = +d['# of Thefts'].replace(/,/g, ''); // Convert to number
+      });
 
+      // Scale for the x-axis (Vehicle names)
+      const x = d3.scaleBand()
+        .domain(data.map(d => d.Vehicle))
+        .range([0, width])
+        .padding(0.2);
 
+      // Scale for the y-axis (Number of Thefts)
+      const y = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d['# of Thefts'])])
+        .range([height, 0]);
 
-      // create x axis
+      // Create the x-axis
+      svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x))
+        .selectAll("text")
+        .attr("transform", "translate(-10,0)rotate(-45)")  // Rotate the labels
+        .style("text-anchor", "end");
 
-      // create y axis
+      // Create the y-axis
+      svg.append("g")
+        .call(d3.axisLeft(y));
 
+      // Bind data to rectangles and append them
+      const bars = svg.selectAll("rect")
+        .data(data);
 
-      // whatever data we decide to do like bars circles or whatever
+      // Append bars for the bar chart
+      bars.join("rect")  // Use join() to create/update elements without enter()
+        .attr("x", d => x(d.Vehicle))
+        .attr("y", d => y(d['# of Thefts']))
+        .attr("width", x.bandwidth())
+        .attr("height", d => height - y(d['# of Thefts']))
+        .attr("fill", "#69b3a2");
 
+      // X Axis Label
+      svg.append("text")
+        .attr("text-anchor", "end")
+        .attr("x", width / 2 + margin.left)
+        .attr("y", height + margin.top + 20)
+        .text("Vehicle Model");
 
-      // maybe a legend or something
+      // Y Axis Label
+      svg.append("text")
+        .attr("text-anchor", "end")
+        .attr("transform", "rotate(-90)")
+        .attr("y", -margin.left + 20)
+        .attr("x", -margin.top - height / 2)
+        .text("# of Thefts");
     });
+
+
   </script>
 </body>
 

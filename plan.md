@@ -27,3 +27,8 @@ The current project idea is to analyze the most susceptible cars to theft across
 
 ## Final data source selection
 - Car thefts (most susceptible car makes to thefts)(https://www.kaggle.com/datasets/thedevastator/2015-vehicle-thefts-by-state-and-make-model)
+
+
+## Run this command to open your own server
+1. python -m http.server 3000
+2. http://localhost:3000/
