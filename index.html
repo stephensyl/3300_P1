@@ -12,6 +12,42 @@
   <h2>Team Members:</h2><br>
   <h2>Stephen Syl-Akinwale (sis33)</h2>
   <h2>Add your name here (netid)</h2>
+
+
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <script>
+    // dimensions 
+    const width = 1200;
+    const height = 900;
+    const svg = d3.select("body")
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+      .style("border", "1px solid black");
+
+    d3.csv("data/2015_State_Top10Report_wTotalThefts.csv").then(function (data) {
+      // Process the data here
+      console.log("pinky promise", data);
+
+      // scale for x axis 
+
+
+      // scale for y axis
+
+
+
+      // create x axis
+
+      // create y axis
+
+
+      // whatever data we decide to do like bars circles or whatever
+
+
+      // maybe a legend or something
+    });
+  </script>
 </body>
 
 </html>
