@@ -51,6 +51,32 @@ The current project idea is to analyze the most susceptible cars to theft across
 
 - ![scale_ideas.jpeg] Scale ideas
 
+
+## Team Member Contributions
+
+- **Anthony**: Contributed to finding source ideas and provided a final review of the project summary.
+- **Lukman**: Wrote the project summary and proposed the project idea.
+- **Josh**: Assisted in finding possible data sources and contributed to the idea development.
+- **Stephen**: Setup Repository and created chart for csv data
+
+
+# Second Project Team Sprint
+
+- **Stephen Syl-Akinwale** - sis33
+- **Lukman Moyosore** - lom4
+- **Joshua Jaquez** - jj498
+- **Anthony Lewis** - all266
+
+## Project Summary
+
+The current project idea is to analyze the most susceptible cars to theft across different states. We plan on creating a bar graph, categorized by car make, showing the number of thefts within a given period for each car.
+
+
+## Final data source selection
+- Car thefts (most susceptible car makes to thefts)(https://www.kaggle.com/datasets/thedevastator/2015-vehicle-thefts-by-state-and-make-model)
+
+- ![scale_ideas.jpeg] Scale ideas
+
 ## Team Member Contributions
 
 - **Anthony**:
