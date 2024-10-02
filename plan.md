@@ -1,4 +1,4 @@
-# Project Team
+# First Project Team Sprint
 
 - **Stephen Syl-Akinwale** - sis33
 - **Lukman Moyosore** - lom4
@@ -32,3 +32,28 @@ The current project idea is to analyze the most susceptible cars to theft across
 ## Run this command to open your own server
 1. python -m http.server 3000
 2. http://localhost:3000/
+
+
+# Second Project Team Sprint
+
+- **Stephen Syl-Akinwale** - sis33
+- **Lukman Moyosore** - lom4
+- **Joshua Jaquez** - jj498
+- **Anthony Lewis** - all266
+
+## Project Summary
+
+The current project idea is to analyze the most susceptible cars to theft across different states. We plan on creating a bar graph, categorized by car make, showing the number of thefts within a given period for each car.
+
+
+## Final data source selection
+- Car thefts (most susceptible car makes to thefts)(https://www.kaggle.com/datasets/thedevastator/2015-vehicle-thefts-by-state-and-make-model)
+
+- ![scale_ideas.jpeg] Scale ideas
+
+## Team Member Contributions
+
+- **Anthony**:
+- **Lukman**:
+- **Josh**:
+- **Stephen**: Setup Repository and created chart for csv data
