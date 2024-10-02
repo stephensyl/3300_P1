@@ -69,13 +69,14 @@
       const bars = svg.selectAll("rect")
         .data(data);
 
-      // Append bars for the bar chart
-      bars.join("rect")  // Use join() to create/update elements without enter()
-        .attr("x", d => x(d.Vehicle))
-        .attr("y", d => y(d['# of Thefts']))
-        .attr("width", x.bandwidth())
-        .attr("height", d => height - y(d['# of Thefts']))
-        .attr("fill", "#69b3a2");
+      data.forEach(function (d) {
+        svg.append("rect")
+          .attr("x", x(d.Vehicle))
+          .attr("y", y(d['# of Thefts']))
+          .attr("width", x.bandwidth())
+          .attr("height", height - y(d['# of Thefts']))
+          .attr("fill", "red");
+      });
 
       // X Axis Label
       svg.append("text")
