@@ -20,9 +20,9 @@
   <svg id="chart" width="1200" height="900"></svg>
   <script>
 
-    d3.csv("data/Top25-2015-Models-2015-thefts-for-release.csv").then(function (data) {
+    d3.csv("data/2015_State_Top10Report_wTotalThefts.csv").then(function (data) {
       // Process the data
-      console.log("pinky promise", data);
+      console.log("Data loaded", data);
 
       // Set up the SVG canvas dimensions
       const margin = { top: 30, right: 30, bottom: 70, left: 60 };
@@ -37,61 +37,201 @@
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-      // Parse the number of thefts and remove commas
       data.forEach(d => {
-        d['# of Thefts'] = +d['# of Thefts'].replace(/,/g, ''); // Convert to number
+        d['Thefts'] = +d['Thefts'].replace(/,/g, ''); // Convert to number
+        d['Car Make'] = d['Make/Model'].split(' ')[0]; // Extract Car Make (first word)
       });
 
-      // Scale for the x-axis (Vehicle names)
+      //states
+      const States = [...new Set(data.map(d => d.State))].slice(0, 10);
+
+      // Create color scale for top 10 states
+      const colorScale = d3.scaleOrdinal()
+        .domain(States)
+        .range(d3.schemeCategory10);
+
+      // X Scale for Car Make
       const x = d3.scaleBand()
-        .domain(data.map(d => d.Vehicle))
+        .domain(data.map(d => d['Car Make']))
         .range([0, width])
         .padding(0.2);
 
-      // Scale for the y-axis (Number of Thefts)
+      // Y Scale for Number of Thefts
       const y = d3.scaleLinear()
-        .domain([0, d3.max(data, d => d['# of Thefts'])])
+        .domain([0, d3.max(data, d => d.Thefts)])
         .range([height, 0]);
 
-      // Create the x-axis
+      // X Axis
       svg.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x))
         .selectAll("text")
-        .attr("transform", "translate(-10,0)rotate(-45)")  // Rotate the labels
-        .style("text-anchor", "end");
-
-      // Create the y-axis
-      svg.append("g")
-        .call(d3.axisLeft(y));
-
-      // Bind data to rectangles and append them
-      const bars = svg.selectAll("rect")
-        .data(data);
-
-      data.forEach(function (d) {
-        svg.append("rect")
-          .attr("x", x(d.Vehicle))
-          .attr("y", y(d['# of Thefts']))
-          .attr("width", x.bandwidth())
-          .attr("height", height - y(d['# of Thefts']))
-          .attr("fill", "red");
-      });
+        .attr("transform", "translate(-10,0)rotate(-45)")
+        .style("text-anchor", "end")
+        .style("font-weight", "bold")
+        .style("font-size", "10px");
 
       // X Axis Label
       svg.append("text")
         .attr("text-anchor", "end")
         .attr("x", width / 2 + margin.left)
         .attr("y", height + margin.top + 20)
-        .text("Vehicle Model");
+        .text("Car brands");
+
+      // Y Axis
+      svg.append("g")
+        .call(d3.axisLeft(y));
 
       // Y Axis Label
       svg.append("text")
         .attr("text-anchor", "end")
         .attr("transform", "rotate(-90)")
         .attr("y", -margin.left + 20)
-        .attr("x", -margin.top - height / 2)
-        .text("# of Thefts");
+        .attr("x", -margin.top - height / 2 + 40)
+        .text("Number of Thefts");
+
+
+      // Jitter function
+      function jitter(max) {
+        return Math.random() * max - max / 2;
+      }
+      // bars
+      svg.selectAll("rect")
+        .data(data)
+        .enter()
+        .append("rect")
+        .attr("x", d => x(d['Car Make']))
+        .attr("y", d => y(d.Thefts))
+        .attr("width", x.bandwidth())
+        .attr("height", d => height - y(d.Thefts))
+        .attr("fill", d => colorScale(d.State));
+
+      // Legend for the states
+      const legend = svg.selectAll(".legend")
+        .data(States)
+        .join("g")
+        .attr("class", "legend")
+        .attr("transform", (d, i) => "translate(0," + i * 20 + ")");
+
+
+      // Legend rectangles
+      legend.append("rect")
+        .attr("x", width - 18)
+        .attr("width", 18)
+        .attr("height", 18)
+        .style("fill", d => colorScale(d));
+
+      // Legend text
+      legend.append("text")
+        .attr("x", width - 24)
+        .attr("y", 9)
+        .attr("dy", ".35em")
+        .style("text-anchor", "end")
+        .text(d => d);
+
+      // Interactive hover for thefts per car make
+      svg.selectAll("rect")
+        .on("mouseover", function (event, d) {
+          // Grey out other circles
+          svg.selectAll("rect")
+            .transition()
+            .duration(200)
+            .style("opacity", 0.3);
+
+          // Highlight the hovered Rect
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .style("opacity", 1)
+            .attr("stroke", "yellow")
+            .attr("stroke-width", 3)
+            .attr("r", 10);
+
+          // Add thefts label above the Bar
+          svg.append("text")
+            .attr("id", "tooltip")
+            .attr("x", x(d['Car Make']) + x.bandwidth() / 2)
+            .attr("y", y(d.Thefts) - 10)
+            .attr("text-anchor", "middle")
+            .attr("font-size", "12px")
+            .attr("font-weight", "bold")
+            .attr("fill", "black")
+            .text(d.Thefts);
+        })
+        .on("mouseout", function (event, d) {
+          // Restore the opacity of all Rect
+          svg.selectAll("rect")
+            .transition()
+            .duration(200)
+            .style("opacity", 1);
+
+          // Remove the highlight from the hovered Rect
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .attr("stroke", "none")
+            .attr("stroke-width", 1)
+            .attr("r", 5);
+
+          // Remove the thefts label
+          d3.select("#tooltip").remove();
+        });
+
+      // Interactivity for summing all the thefts when a state legend is hovered
+      legend.selectAll("rect")
+        .on("mouseover", function (event, d) {
+          // Grey out all circles except the ones from the hovered state
+          svg.selectAll("rect")
+            .transition()
+            .duration(200)
+            .style("opacity", function (o) {
+              return o.State === d ? 1 : 0.1;  // Highlight Rectangles for the selected state
+            });
+
+          // Highlight the rect of the hovered state
+          svg.selectAll("rect")
+            .filter(function (e) {
+              return e.State === d;
+            })
+            .attr("stroke", "black")
+            .attr("stroke-width", 3);
+
+          // Display the total thefts for the hovered state
+          svg.append("text")
+            .attr("id", "total-tooltip")
+            .attr("x", width / 2)
+            .attr("y", height / 2)
+            .attr("text-anchor", "top")
+            .attr("font-size", "15px")
+            .attr("font-weight", "bold")
+            .attr("fill", "Black")
+            .text(d + " Total Thefts: " + d3.sum(data.filter(e => e.State === d), e => e.Thefts));
+
+          // highlight legend being selected
+          d3.select(this)
+            .transition()
+            .duration(200)
+            .style("opacity", 1);
+        })
+        .on("mouseout", function (event, d) {
+          // Restore the opacity of all Bar
+          svg.selectAll("rect")
+            .transition()
+            .duration(200)
+            .style("opacity", 1);
+
+          // Remove the highlight from the state's Rect
+          svg.selectAll("rect")
+            .filter(function (e) {
+              return e.State === d;
+            })
+            .attr("stroke", "none")
+            .attr("stroke-width", 1);
+
+          // Remove the total thefts tooltip
+          d3.select("#total-tooltip").remove();
+        });
+
     });
 
 
